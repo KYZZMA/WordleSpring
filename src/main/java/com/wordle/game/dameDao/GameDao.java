@@ -27,7 +27,6 @@ public class GameDao {
         в следующий метод, а также передача рандомного слова, которое
         будет отгадываться.
          */
-
         return running(puzzleWord, list, model);
     }
 
@@ -56,7 +55,6 @@ public class GameDao {
 
         return puzzleWord;
     }
-
 
     public static String running(String puzzleWord, ArrayList<String> list, String model) {
         //запускаем цикл с условием для выхода из него
@@ -136,33 +134,65 @@ public class GameDao {
                 }
             }
 
-            /*
-             тут реализуем проверку символа, который может быть в слове дважды и иметь маску G
-             если в слове находится такой символ и он не на своем месте, имеет маску Y
-             и при этом находится на другой позиции под маской G, заменяем маску на символ T
-             пример слов: ветер - гонец, вторая буква Е будет иметь маску G, поэтому заменяем ее на Т
-             чтобы дальше можно было в фильтре символов, которые не на своих местах найти подходящее слово
-             */
+
+
+            String[] oldMask = newMask.split("");
+            String[] charMask = chars.toString().split("");
 
             String newChars = String.valueOf(chars);
+            String oldChars = newMask;
+
+            /*
+             тут реализуем проверку символа, который может быть в предполагаемом слове дважды и иметь как
+             маску G так и Y, если в слове находится такой символ и он не на своем месте, имеет маску Y
+             и при этом находится на другой позиции под маской G, заменяем маску на символ T
+             пример слов: ветер - гонец, первая буква Е будет иметь маску Y, поэтому заменяем ее на Т
+             чтобы дальше можно было в фильтре символов, которые не на своих местах найти подходящее слово
+             */
             if (newMask.contains("Y") && chars.toString().contains("G")) {
-                String regO = "";
-                if (newMask.contains("Y")) {
-                    int regOI = newMask.indexOf("Y");
-                    regO = String.valueOf(newWord.charAt(regOI));
-
+                for (int i = 0; i < oldMask.length; i++) {
+                    for (int j = 0; j < charMask.length; j++) {
+                        if (oldMask[i].equals("Y") && charMask[j].equals("G")) {
+                            String regO = String.valueOf(newWord.charAt(i));
+                            String regC = String.valueOf(list.get(x).charAt(j));
+                            if (regO.equals(regC)) {
+                                oldMask[i] = "T";
+                            }
+                        }
+                    }
                 }
-                String regC = "";
-
-                if (chars.toString().contains("G")) {
-                    int regCI = chars.indexOf("G");
-                    regC = String.valueOf(list.get(x).charAt(regCI));
+                StringBuilder sb = new StringBuilder();
+                for (String ch : oldMask) {
+                    sb.append(ch);
                 }
+                oldChars = sb.toString();
+            }
+            /*
+             тут реализуем проверку символа, который может быть в слове из словаря дважды и иметь как
+             маску G так и Y, если в слове находится такой символ и он не на своем месте, имеет маску Y
+             и при этом находится на другой позиции под маской G, заменяем маску на символ J
+             пример слов: арест - афера, вторая буква А будет иметь маску Y, поэтому заменяем ее на J
+             чтобы дальше можно было в фильтре символов, которые не на своих местах найти подходящее слово
+             */
+            if (newMask.contains("G") && chars.toString().contains("Y")) {
+                for (int i = 0; i < oldMask.length; i++) {
+                    for (int j = 0; j < charMask.length; j++) {
+                        if (oldMask[i].equals("G") && charMask[j].equals("Y")) {
+                            String regO = String.valueOf(newWord.charAt(i));
+                            String regC = String.valueOf(list.get(x).charAt(j));
+                            if (regO.equals(regC)) {
 
-                if (regO.equals(regC)) {
-                    int regCi = chars.indexOf("G");
-                    newChars = chars.toString().replace("G", "T");
+                                charMask[j] = "J";
+
+                            }
+                        }
+                    }
                 }
+                StringBuilder sb = new StringBuilder();
+                for (String ch : charMask) {
+                    sb.append(ch);
+                }
+                newChars = sb.toString();
             }
 
 
@@ -171,9 +201,10 @@ public class GameDao {
              */
 
             HashMap<String, String> mapa = new HashMap<>();
-            greyChar(newChars, newMask, wordGuess, newWord, mapa);
-            yellowChar(newMask, newWord, mapa);
-            greenChar(newMask, newWord, mapa);
+            greyChar(newChars, oldChars, wordGuess, newWord, mapa);
+            yellowChar(oldChars, newWord, mapa);
+            greenChar(oldChars, newWord, mapa);
+
 
 
             // считываем слова из отфильтрованногой мапы и записываем в список
@@ -250,7 +281,7 @@ public class GameDao {
                 */
 
                 String[] arrReg = new String[]{" ", " ", " ", " ", " "};
-                if (newMask.contains("Y") && k.contains("Y") || k.contains("T")) {
+                if (newMask.contains("Y") || newMask.contains("J") && k.contains("Y") || k.contains("T") ) {
                     for (int i = 0; i < oldMask.length; i++) {
                         if (charsMask[i].equals("Y") || charsMask[i].equals("T")) {
                             countYC.add(String.valueOf(v.charAt(i)));
@@ -319,20 +350,19 @@ public class GameDao {
             String k = (String) entry.getKey();
             String v = (String) entry.getValue();
             if (newMask.contains("G")) {
-                String[] arrMask = newMask.replace("N", "-").replace("Y", "-").split("");
+                String[] arrMask = newMask.replace("N", "-").replace("Y", "-").replace("T", "-").split("");
                 StringBuilder sv = new StringBuilder();
                 for (String ch : arrMask) {
                     sv.append(ch);
                 }
                 String word3 = sv.toString();
 
-                String[] arrMaskN1 = k.replace("N", "-").replace("Y", "-").replace("T", "-").split("");
+                String[] arrMaskN1 = k.replace("N", "-").replace("Y", "-").replace("J", "-").split("");
                 StringBuilder sr = new StringBuilder();
                 for (String ch : arrMaskN1) {
                     sr.append(ch);
                 }
                 String word4 = sr.toString();
-
                 if (word3.equals(word4)) {
                     continue;
                 } else {
