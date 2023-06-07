@@ -121,7 +121,7 @@ public class GameDao {
     }
 
     public static String sercheChar(List<String> list, String newWord, String newMask) {
-        //реализуем проверку слов с выявленными символами
+        //реализуем создание масок для слов в списке, проверяя их на схождение маски предпологаемого слова которое вводили ранее
         String result = "";
         for (int x = 0; x < list.size(); x++) {
             StringBuilder chars = new StringBuilder();
@@ -135,6 +135,14 @@ public class GameDao {
                     chars.append("N");
                 }
             }
+
+            /*
+             тут реализуем проверку символа, который может быть в слове дважды и иметь маску G
+             если в слове находится такой символ и он не на своем месте, имеет маску Y
+             и при этом находится на другой позиции под маской G, заменяем маску на символ T
+             пример слов: ветер - гонец, вторая буква Е будет иметь маску G, поэтому заменяем ее на Т
+             чтобы дальше можно было в фильтре символов, которые не на своих местах найти подходящее слово
+             */
 
             String newChars = String.valueOf(chars);
             if (newMask.contains("Y") && chars.toString().contains("G")) {
@@ -158,41 +166,40 @@ public class GameDao {
             }
 
 
+            /*
+            Вызываем сами методы и передаем новые подходящие символы через мапу
+             */
+
             HashMap<String, String> mapa = new HashMap<>();
             greyChar(newChars, newMask, wordGuess, newWord, mapa);
             yellowChar(newMask, newWord, mapa);
             greenChar(newMask, newWord, mapa);
 
 
-            int printCount = 0;
+            // считываем слова из отфильтрованногой мапы и записываем в список
             ArrayList<String> arrw = new ArrayList<>();
             for (Map.Entry<String, String> entry1 : mapa.entrySet()) {
                 String s = (String) entry1.getKey();
                 String c = (String) entry1.getValue();
                 arrw.add(c);
 
-
             }
-
-//            for (int b = 0; b != 10;) {
-//                result += arrw.get(b) + " ";
-//                b++;
-//            }
-
+            // считываем слова из отфильтрованного списка и записываем в строковую переменную
                 for (String d : arrw) {
                     result += d + " ";
                 }
-
-
-
-
 
         }
         return result;
     }
 
     public static HashMap<String, String> greyChar(String chars, String newMask, String wordGuess, String newWord, HashMap<String, String> filtrarray) {
-
+        /*
+        сортируем все слова с маской N таким образом, что отбираются именно индексы этих символов
+        после чего берутся сами символы, затем берется слово из списка и проверятся на наличие в нем
+        выбранных символов, которые не должны присутствовать в слове. Если ни одного символа в слове
+        не было, то оно добавляется в мапу.
+         */
 
         String[] arrReg = new String[]{" ", " ", " ", " ", " "};
         String[] oldMask = newMask.split("");
@@ -221,6 +228,8 @@ public class GameDao {
 
 
         for (Map.Entry<String, String> entry : filtrarray.entrySet()) {
+
+
             String k = (String) entry.getKey();
             String v = (String) entry.getValue();
             if (newMask.contains("Y")) {
@@ -232,6 +241,13 @@ public class GameDao {
                 ArrayList<String> countYO = new ArrayList<>();
                 ArrayList<String> countYC = new ArrayList<>();
 
+                /*
+                находим символы в которых присутствует маска Y, записываем их в отдельные переменные
+                и фильтруем по алфавиту, если данные символы оказались равны, то продолжаем фильтр
+                уже по позициям данных символов, самое главное, чтобы данные символы не были на
+                одинаковых позициях в предполагаемом слове и слове из списка
+
+                */
 
                 String[] arrReg = new String[]{" ", " ", " ", " ", " "};
                 if (newMask.contains("Y") && k.contains("Y") || k.contains("T")) {
@@ -249,11 +265,12 @@ public class GameDao {
                     }
                 }
 
-
+                // сортируем по алфавиту
                 Collections.sort(countYO);
                 Collections.sort(countYC);
 
 
+                //убираем повторяющиеся символы
                 String resultO = "";
                 for (String i : countYO) {
                     resultO += i;
@@ -265,18 +282,19 @@ public class GameDao {
                 }
                 String newResultC = resultC.replaceAll("(.)(?=.*\\1)", "");
 
+                //сравниваем выражения
                 if (newResultO.equals(newResultC) && !resultC.equals("")) {
 
 
                     for (int i = 0; i < arrReg.length; i++) {
-
+                        //проверяем на схождение позиций
                         if (!arrReg[i].equals(guessWordArr[i])) {
                             count++;
                         }
                     }
 
                 }
-
+                //если не один символ не совпал по позиции, то продолжаем сортировку, в другом случае - удаляем из мапы
                 if (count == 5) {
                     continue;
                 } else {
@@ -291,6 +309,11 @@ public class GameDao {
     }
 
     public static HashMap<String, String> greenChar(String newMask, String newWord, HashMap<String, String> filtrarray) {
+
+        /*
+        производим сортировку путем удаления всех масок, кроме G и фильтруем так все оставшиеся слова
+        если слово не совпало по маске G, то удаляем его из мапы
+         */
 
         for (Map.Entry<String, String> entry : filtrarray.entrySet()) {
             String k = (String) entry.getKey();
