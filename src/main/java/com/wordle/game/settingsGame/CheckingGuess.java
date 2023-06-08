@@ -1,123 +1,8 @@
-package com.wordle.game.dameDao;
+package com.wordle.game.settingsGame;
 
-import org.springframework.stereotype.Component;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
 
-
-@Component
-public class GameDao {
-
-    static Scanner one = new Scanner(System.in);
-
-
-    ArrayList<String> guesslist = new ArrayList<>();
-    ArrayList<String> list = scannerWord(guesslist);
-
-    String guess = null;
-    String puzzleWord = randomPuzzleString(list, guess);
-
-    public String check(String model) {
-        /*
-        В этом методе реализуется формирование словаря и передача его
-        в следующий метод, а также передача рандомного слова, которое
-        будет отгадываться.
-         */
-        return running(puzzleWord, list, model);
-    }
-
-
-    public static ArrayList<String> scannerWord(ArrayList<String> list) {
-
-        File path = new File("E:/vocabulary.txt");
-
-        // пробуем считать словарь из файла в список
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-            String s;
-            while ((s = br.readLine()) != null) {
-                String[] split = s.split("\n");
-                list.addAll(Arrays.asList(split));
-            }
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
-        return list;
-    }
-
-    public static String randomPuzzleString(ArrayList<String> list, String puzzleWord) {
-        // выбираем рандомное слово мз списка, которое будет загадываться
-        int random = (int) (Math.random() * list.size());
-        puzzleWord = list.get(random);
-
-        return puzzleWord;
-    }
-
-    public static String running(String puzzleWord, ArrayList<String> list, String model) {
-        //запускаем цикл с условием для выхода из него
-        String newWord = null;
-        String newMask = null;
-        boolean flag = false;
-        while (!flag) {
-            flag = true;
-
-            //делаем проверку на корректность введенного слова
-            if (list.contains(model)) {
-
-                //при нахождении предполагаемого слова, сравниваем его символы с загаданным словом
-
-                String[] result = new String[puzzleWord.length()];
-                String[] resultMask = new String[puzzleWord.length()];
-
-                for (int i = 0; i < model.length(); i++) {
-                    if (puzzleWord.charAt(i) == model.charAt(i)) {
-                        result[i] = String.valueOf(model.charAt(i));
-                        resultMask[i] = "G";
-                        continue;
-                    } else if (puzzleWord.indexOf(model.charAt(i)) != -1) {
-                        result[i] = "(" + model.charAt(i) + ")";
-                        resultMask[i] = "Y";
-                        flag = false;
-                    } else {
-                        result[i] = "-";
-                        resultMask[i] = "N";
-                        flag = false;
-                    }
-                }
-
-                //делаем проверку в словаре со словами, которые подходят по найденным символам
-                StringBuilder sbR = new StringBuilder();
-                for (String ch : result) {
-                    sbR.append(ch);
-                }
-                newWord = sbR.toString();
-
-                StringBuilder sbM = new StringBuilder();
-                for (String ch : resultMask) {
-                    sbM.append(ch);
-                }
-                newMask = sbM.toString();
-                // проверяем маску на сходство с загаданным словом, если маска не идентична, то продолжаем проверку и поиск
-                if (newMask.equals("GGGGG")) {
-                    return newWord + " вы выиграли";
-                } else
-                    return newWord + " | " + newMask + " | " + sercheChar(list, model, newMask);
-
-
-            } else {
-                // если слово не было в словаре, то сообщаем об этом пользователю и повторяем метод
-                return "такого слова нет";
-
-
-            }
-
-        }
-        return newWord;
-    }
-
+public class CheckingGuess {
     public static String sercheChar(List<String> list, String newWord, String newMask) {
         //реализуем создание масок для слов в списке, проверяя их на схождение маски предпологаемого слова которое вводили ранее
         String result = "";
@@ -216,9 +101,9 @@ public class GameDao {
 
             }
             // считываем слова из отфильтрованного списка и записываем в строковую переменную
-                for (String d : arrw) {
-                    result += d + " ";
-                }
+            for (String d : arrw) {
+                result += d + " ";
+            }
 
         }
         return result;

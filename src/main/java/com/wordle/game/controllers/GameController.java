@@ -1,22 +1,21 @@
 package com.wordle.game.controllers;
 
-import com.wordle.game.dameDao.GameDao;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.wordle.game.settingsGame.DataTransfer;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/echo")
 public class GameController {
 
-    private final GameDao gameDao;
+    private final DataTransfer dataTransfer;
 
-    public GameController(GameDao gameDao) {
-        this.gameDao = gameDao;
+    public GameController(DataTransfer dataTransfer) {
+        this.dataTransfer = dataTransfer;
     }
 
     @GetMapping
     public String home(@RequestParam String model){
-        return gameDao.check(model);
+        return dataTransfer.check(model);
     }
 
 
