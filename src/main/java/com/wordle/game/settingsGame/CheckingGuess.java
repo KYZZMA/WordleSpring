@@ -109,6 +109,8 @@ public class CheckingGuess {
         return result;
     }
 
+    public static ArrayList<String> inertArr = new ArrayList<>();
+
     public static HashMap<String, String> greyChar(String chars, String newMask, String wordGuess, String newWord, HashMap<String, String> filtrarray) {
         /*
         сортируем все слова с маской N таким образом, что отбираются именно индексы этих символов
@@ -123,17 +125,27 @@ public class CheckingGuess {
             for (int i = 0; i < oldMask.length; i++) {
                 if (oldMask[i].equals("N")) {
                     arrReg[i] = String.valueOf(newWord.charAt(i));
+                    inertArr.add(String.valueOf(newWord.charAt(i)));
                 }
             }
         }
         int count = 0;
-        for (int i = 0; i < arrReg.length; i++) {
-            if (!wordGuess.contains(arrReg[i])) {
+        for (String value : arrReg) {
+            if (!wordGuess.contains(value)) {
                 count++;
             }
         }
+        int countInert = 0;
         if (count == arrReg.length) {
-            filtrarray.put(chars, wordGuess);
+            for (String s : inertArr) {
+                if (!wordGuess.contains(s)) {
+                    countInert++;
+                }
+            }
+            if (countInert == inertArr.size()){
+                filtrarray.put(chars, wordGuess);
+            }
+
         }
 
 
