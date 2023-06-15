@@ -3,6 +3,7 @@ package com.wordle.game.settingsGame;
 import java.util.ArrayList;
 
 public class ProgramLaunch {
+    public static int count = 1;
     public static String running(String puzzleWord, ArrayList<String> list, String model) {
         //запускаем цикл с условием для выхода из него
         String newWord = null;
@@ -49,10 +50,10 @@ public class ProgramLaunch {
                 newMask = sbM.toString();
                 // проверяем маску на сходство с загаданным словом, если маска не идентична, то продолжаем проверку и поиск
                 if (newMask.equals("GGGGG")) {
-                    return newWord + " вы выиграли";
-                } else
-                    return newWord + " | " + newMask + " | " + CheckingGuess.sercheChar(list, model, newMask);
-
+                    return newWord + " вы выиграли " + count;
+                } else {
+                    return newWord + " | " + newMask + " | " + count++ + " | "+ CheckingGuess.sortWeight(CheckingGuess.sercheChar(list, model, newMask));
+                }
 
             } else {
                 // если слово не было в словаре, то сообщаем об этом пользователю и повторяем метод

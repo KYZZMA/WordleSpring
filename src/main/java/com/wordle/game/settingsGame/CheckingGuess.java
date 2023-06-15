@@ -1,11 +1,13 @@
 package com.wordle.game.settingsGame;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CheckingGuess {
-    public static String sercheChar(List<String> list, String newWord, String newMask) {
+    public static ArrayList<String> sercheChar(List<String> list, String newWord, String newMask) {
         //реализуем создание масок для слов в списке, проверяя их на схождение маски предпологаемого слова которое вводили ранее
-        String result = "";
+        ArrayList<String> arrw = new ArrayList<>();
+
         for (int x = 0; x < list.size(); x++) {
             StringBuilder chars = new StringBuilder();
             String wordGuess = list.get(x);
@@ -93,25 +95,20 @@ public class CheckingGuess {
 
 
             // считываем слова из отфильтрованногой мапы и записываем в список
-            ArrayList<String> arrw = new ArrayList<>();
             for (Map.Entry<String, String> entry1 : mapa.entrySet()) {
                 String s = (String) entry1.getKey();
                 String c = (String) entry1.getValue();
                 arrw.add(c);
 
             }
-            // считываем слова из отфильтрованного списка и записываем в строковую переменную
-            for (String d : arrw) {
-                result += d + " ";
-            }
 
         }
-        return result;
+        return arrw;
     }
 
     public static ArrayList<String> inertArr = new ArrayList<>();
 
-    public static HashMap<String, String> greyChar(String chars, String newMask, String wordGuess, String newWord, HashMap<String, String> filtrarray) {
+    public static void greyChar(String chars, String newMask, String wordGuess, String newWord, HashMap<String, String> filtrarray) {
         /*
         сортируем все слова с маской N таким образом, что отбираются именно индексы этих символов
         после чего берутся сами символы, затем берется слово из списка и проверятся на наличие в нем
@@ -149,10 +146,9 @@ public class CheckingGuess {
         }
 
 
-        return filtrarray;
     }
 
-    public static HashMap<String, String> yellowChar(String newMask, String newWord, HashMap<String, String> filtrarray) {
+    public static void yellowChar(String newMask, String newWord, HashMap<String, String> filtrarray) {
 
 
         for (Map.Entry<String, String> entry : filtrarray.entrySet()) {
@@ -233,10 +229,9 @@ public class CheckingGuess {
                 continue;
             }
         }
-        return filtrarray;
     }
 
-    public static HashMap<String, String> greenChar(String newMask, String newWord, HashMap<String, String> filtrarray) {
+    public static void greenChar(String newMask, String newWord, HashMap<String, String> filtrarray) {
 
         /*
         производим сортировку путем удаления всех масок, кроме G и фильтруем так все оставшиеся слова
@@ -270,6 +265,73 @@ public class CheckingGuess {
             }
 
         }
-        return filtrarray;
+    }
+
+    public static String sortWeight( ArrayList<String> list) {
+
+        HashMap<String, Integer> weightList = new HashMap<>();
+
+        for (String z : list) {
+
+            int count = 0;
+            String[] chars = z.split("");
+            for (String aChar : chars) {
+                switch (aChar) {
+                    case ("о") -> count += 33;
+                    case ("e") -> count += 32;
+                    case ("а") -> count += 31;
+                    case ("и") -> count += 30;
+                    case ("н") -> count += 29;
+                    case ("т") -> count += 28;
+                    case ("с") -> count += 27;
+                    case ("р") -> count += 26;
+                    case ("в") -> count += 25;
+                    case ("л") -> count += 24;
+                    case ("к") -> count += 23;
+                    case ("м") -> count += 22;
+                    case ("д") -> count += 21;
+                    case ("п") -> count += 20;
+                    case ("у") -> count += 19;
+                    case ("я") -> count += 18;
+                    case ("ы") -> count += 17;
+                    case ("ь") -> count += 16;
+                    case ("г") -> count += 15;
+                    case ("з") -> count += 14;
+                    case ("б") -> count += 13;
+                    case ("ч") -> count += 12;
+                    case ("й") -> count += 11;
+                    case ("х") -> count += 10;
+                    case ("ж") -> count += 9;
+                    case ("ш") -> count += 8;
+                    case ("ю") -> count += 7;
+                    case ("ц") -> count += 6;
+                    case ("щ") -> count += 5;
+                    case ("э") -> count += 4;
+                    case ("ф") -> count += 3;
+                    case ("ъ") -> count += 2;
+                    case ("ё") -> count += 1;
+                }
+            }
+            weightList.put(z, count);
+        }
+
+        HashMap<String, Integer> sortedMap1 = weightList.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        StringBuilder result = new StringBuilder();
+        for (Map.Entry<String, Integer> entry1 : sortedMap1.entrySet()) {
+            String c = entry1.getKey();
+            result.append(c).append(" ");
+        }
+
+
+        return result.toString();
     }
 }
