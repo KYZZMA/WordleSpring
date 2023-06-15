@@ -267,6 +267,12 @@ public class CheckingGuess {
         }
     }
 
+    /*
+    Реализуем метод который будет фильтровать полученные слова по весу символов
+    и выводить их в порядке возрастания весовой зависимости, то есть, чем больше
+    весит слово, тем оно будет первее
+     */
+
     public static String sortWeight( ArrayList<String> list) {
 
         HashMap<String, Integer> weightList = new HashMap<>();
