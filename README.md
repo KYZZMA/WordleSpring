@@ -7,5 +7,6 @@
   ![image](https://github.com/KYZZMA/WordleSpring/assets/104650320/1341dc70-f2ed-4f24-98fa-a44cff3e52d6)
 
 - Игра закончится после полного угадывания слова и выводом его всех букв (ветер), также идет подсчет попыток, за которое удалось отгадать слово
+  
   ![image](https://github.com/KYZZMA/WordleSpring/assets/104650320/0e5a32a3-3856-49b0-85cf-27efe3f8b328)
 
